@@ -162,6 +162,12 @@ elif [[ "${EVENT_TYPE}" == "ManualInteractionRequired" ]]; then
 ![](${POSTER_URL})"
 
 elif [[ "${EVENT_TYPE}" == "HealthIssue" ]]; then
+    # If ${sonarr_health_issue_type} contains the substring 'Indexer'
+    if [[ "${sonarr_health_issue_type}" == *"Indexer"* ]]; then
+        # Exit - Prowlarr will take care of indexers
+        exit 0
+    fi
+
     POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png" # Sad Turtle
     TITLE="${APP_NAME} - Health Degraded"
     MESSAGE="
@@ -172,6 +178,12 @@ elif [[ "${EVENT_TYPE}" == "HealthIssue" ]]; then
 ![](${POSTER_URL})"
 
 elif [[ "${EVENT_TYPE}" == "HealthRestored" ]]; then
+    # If ${sonarr_health_issue_type} contains the substring 'Indexer'
+    if [[ "${sonarr_health_restored_type}" == *"Indexer"* ]]; then
+        # Exit - Prowlarr will take care of indexers
+        exit 0
+    fi
+
     POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f604/u1f604_u1f422.png" # Happy Turtle
     TITLE="${APP_NAME} - Health Improved"
     MESSAGE="
