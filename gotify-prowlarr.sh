@@ -14,12 +14,19 @@ PRIORITY=5
 # +HealthRestored
 # +ApplicationUpdate
 
+# Emoji Kitchen Turtles, used as the poster for non-media alerts
+TURTLE_THUMBUP="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f44d/u1f44d_u1f422.png"
+TURTLE_COMPUTER="https://www.gstatic.com/android/keyboard/emojikitchen/20240206/u1f4bb/u1f4bb_u1f422.png"
+TURTLE_SAD="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png"
+TURTLE_HAPPY="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f604/u1f604_u1f422.png"
+TURTLE_THINK="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f914/u1f914_u1f422.png"
+
 # Fallback values if Prowlarr env variables are empty
 APP_NAME="${prowlarr_instancename:-Prowlarr}"
 EVENT_TYPE="${prowlarr_eventtype:-Test}"
 
-# Thumbs Up Turtle
-POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f44d/u1f44d_u1f422.png"
+# Default Poster 
+POSTER_URL="${TURTLE_THUMBUP}"
 
 # Handle Prowlarr's Test Event
 if [[ "${EVENT_TYPE}" == "Test" ]]; then
@@ -45,8 +52,14 @@ elif [[ "${EVENT_TYPE}" == "ApplicationUpdate" ]]; then
     fi
 
 elif [[ "${EVENT_TYPE}" == "HealthIssue" ]]; then
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png" # Sad Turtle
-    TITLE="${APP_NAME} - Health Degraded"
+    if [[ "${prowlarr_health_issue_type}" == *"Update"* ]]; then
+        POSTER_URL="${TURTLE_COMPUTER}"
+        TITLE="${APP_NAME} - Update Detected"
+    else
+        POSTER_URL="${TURTLE_SAD}"
+        TITLE="${APP_NAME} - Health Degraded"
+    fi
+
     MESSAGE="
 **Event Level:** ${prowlarr_health_issue_level}  
 **Event Source:** ${prowlarr_health_issue_type}  
@@ -55,8 +68,15 @@ elif [[ "${EVENT_TYPE}" == "HealthIssue" ]]; then
 ![](${POSTER_URL})"
 
 elif [[ "${EVENT_TYPE}" == "HealthRestored" ]]; then
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f604/u1f604_u1f422.png" # Happy Turtle
-    TITLE="${APP_NAME} - Health Improved"
+    if [[ "${prowlarr_health_restored_type}" == *"Update"* ]]; then 
+        POSTER_URL="${TURTLE_THUMBUP}"
+        TITLE="${APP_NAME} - Update Completed"
+
+    else
+        POSTER_URL="${TURTLE_SAD}"
+        TITLE="${APP_NAME} - Health Improved"
+    fi
+    
     MESSAGE="
 **Event Level:** ${prowlarr_health_restored_level}  
 **Event Source:** ${prowlarr_health_restored_type}  

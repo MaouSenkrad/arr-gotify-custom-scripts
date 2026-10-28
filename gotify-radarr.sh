@@ -23,6 +23,13 @@ PRIORITY=5
 # +ApplicationUpdate
 # +ManualInteractionRequired
 
+# Emoji Kitchen Turtles, used as the poster for non-media alerts
+TURTLE_THUMBUP="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f44d/u1f44d_u1f422.png"
+TURTLE_COMPUTER="https://www.gstatic.com/android/keyboard/emojikitchen/20240206/u1f4bb/u1f4bb_u1f422.png"
+TURTLE_SAD="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png"
+TURTLE_HAPPY="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f604/u1f604_u1f422.png"
+TURTLE_THINK="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f914/u1f914_u1f422.png"
+
 # Fallback values if Radarr env variables are empty
 APP_NAME="${radarr_instancename:-Radarr}"
 EVENT_TYPE="${radarr_eventtype:-Test}"
@@ -41,7 +48,7 @@ CUSTOM_FORMAT_SCORE="${radarr_moviefile_customformatscore:-0}"
 
 # If length of MOVIE_ID is zero or if returned false (-1)
 if [[ -z "${MOVIE_ID}" || "${MOVIE_ID}" == "-1" ]]; then
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20260202/u1f44d/u1f44d_u1f422.png" # Thumbs Up Turtle
+    POSTER_URL="${TURTLE_THUMBUP}"
 else # Pull Poster URL from Radarr using API
     # Fetch movie metadata payload
     RADARR_RESPONSE=$(curl -s -H "X-Api-Key: ${RADARR_KEY}" "${RADARR_URL}/api/v3/movie/${MOVIE_ID}")
@@ -116,7 +123,7 @@ elif [[ "${EVENT_TYPE}" == "Download" ]]; then
 elif [[ "${EVENT_TYPE}" == "ManualInteractionRequired" ]]; then
 
     TITLE="${APP_NAME} - Import Requires Manual Interaction"
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png" # Sad Turtle
+    POSTER_URL="${TURTLE_THINK}"
     MESSAGE="
 **Movie:** ${MOVIE_TITLE} (${MOVIE_YEAR})  
 **Download Client:** ${CLIENT}  
@@ -128,10 +135,14 @@ elif [[ "${EVENT_TYPE}" == "HealthIssue" ]]; then
     if [[ "${radarr_health_issue_type}" == *"Indexer"* ]]; then
         # Exit - Prowlarr will take care of indexers
         exit 0
+    elif [[ "${radarr_health_issue_type}" == *"Update"* ]]; then 
+        POSTER_URL="${TURTLE_COMPUTER}"
+        TITLE="${APP_NAME} - Update Detected"
+    else
+        POSTER_URL="${TURTLE_SAD}"
+        TITLE="${APP_NAME} - Health Degraded"
     fi
 
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f622/u1f622_u1f422.png" # Sad Turtle
-    TITLE="${APP_NAME} - Health Degraded"
     MESSAGE="
 **Event Level:** ${radarr_health_issue_level}  
 **Event Source:** ${radarr_health_issue_type}  
@@ -144,10 +155,14 @@ elif [[ "${EVENT_TYPE}" == "HealthRestored" ]]; then
     if [[ "${radarr_health_restored_type}" == *"Indexer"* ]]; then
         # Exit - Prowlarr will take care of indexers
         exit 0
+    elif [[ "${sonarr_health_restored_type}" == *"Update"* ]]; then 
+        POSTER_URL="${TURTLE_THUMBUP}"
+        TITLE="${APP_NAME} - Update Completed"
+    else
+        POSTER_URL="${TURTLE_HAPPY}"
+        TITLE="${APP_NAME} - Health Improved"
     fi
 
-    POSTER_URL="https://www.gstatic.com/android/keyboard/emojikitchen/20201001/u1f604/u1f604_u1f422.png" # Happy Turtle
-    TITLE="${APP_NAME} - Health Improved"
     MESSAGE="
 **Event Level:** ${radarr_health_restored_level}  
 **Event Source:** ${radarr_health_restored_type}  
