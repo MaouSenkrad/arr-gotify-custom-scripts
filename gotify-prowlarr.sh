@@ -73,7 +73,7 @@ elif [[ "${EVENT_TYPE}" == "HealthRestored" ]]; then
         TITLE="${APP_NAME} - Update Completed"
 
     else
-        POSTER_URL="${TURTLE_SAD}"
+        POSTER_URL="${TURTLE_HAPPY}"
         TITLE="${APP_NAME} - Health Improved"
     fi
     
